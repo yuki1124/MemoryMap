@@ -56,10 +56,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
     public Realm realm;
-
-    public static final String TAG = "TEST";
     GoogleMap map;
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -142,44 +139,31 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         });
         //シールが出てくる
 
-        map = ((SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.map))
-                .getMap();
 
-        MapsInitializer.initialize(this);
-
-        moveToSapporoStation();
     }
 
-    protected void moveToSapporoStation() {
-        CameraUpdate cu =
-                CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(mLocation.getLatitude(), mLocation.getLongitude()),15);
-        mMap.moveCamera();
-    }
+    public void save(final String EditContent, final String EditPlace, final String stickername, final double latitude, final double longitude) {
 
-    public void save(final String EditContent, final String EditPlace, final String stickername, final double latitude, final double longitude){
-
-        Date date=new Date();
+        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
         final String updateDate = sdf.format(date);
 
-        realm.executeTransaction(new Realm.Transaction(){
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
-            public void execute(Realm bgRealm){
-                Memo memo=realm.createObject(Memo.class);
+            public void execute(Realm bgRealm) {
+                Memo memo = realm.createObject(Memo.class);
                 memo.content = EditContent;
                 memo.place = EditPlace;
                 memo.updateDate = updateDate;
-                memo.stickername=stickername;
-                memo.latitude=latitude;
-                memo.longitude=longitude;
+                memo.stickername = stickername;
+                memo.latitude = latitude;
+                memo.longitude = longitude;
             }
         });
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
 
         realm.close();
@@ -187,25 +171,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     //realm
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[]permissions, @NonNull int[] grantResults){}
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras){}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
-    public void onLocationChanged(Location location){
-        Log.d("debug","Latitude:"+location.getLatitude());
-        Log.d("debug","Longitude:"+location.getLongitude());
+    public void onLocationChanged(Location location) {
+        Log.d("debug", "Latitude:" + location.getLatitude());
+        Log.d("debug", "Longitude:" + location.getLongitude());
 
         mLocation = location;
 
-        if(mMarker!=null){
+        if (mMarker != null) {
             mMarker.remove();
         }
 
         LatLng Tokyo = new LatLng(location.getLatitude(), location.getLongitude());
         // Markerを作ってくれる
         mMarker = mMap.addMarker(new MarkerOptions().position(Tokyo).title("Now"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 15));
 
     }
 
@@ -213,11 +200,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     //
 
     @Override
-    public void onProviderEnabled(String provider){}
+    public void onProviderEnabled(String provider) {
+    }
 
     @Override
-    public void onProviderDisabled(String provider){}
-
+    public void onProviderDisabled(String provider) {
+    }
 
 
     /**
@@ -234,10 +222,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mMap = googleMap;
 
         RealmResults<Memo> results = realm.where(Memo.class).findAll();
-        for (Memo data: results){
-            // data.longitude, data.latitude
+        for (Memo data : results) {
+            //data.longitude, data.latitude
             mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(data.longitude, data.latitude))
+                    .position(new LatLng(data.latitude, data.longitude))
                     .title(data.place))
                     .setIcon(BitmapDescriptorFactory.fromResource(Sticker.valueOf(data.stickername).id));
         }
