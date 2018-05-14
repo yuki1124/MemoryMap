@@ -13,7 +13,7 @@
         android:name=".MemorymapApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher_map"
-        android:label="@string/app_name"
+        android:label="MemoryMap"
         android:roundIcon="@drawable/ic_launcher_map"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
