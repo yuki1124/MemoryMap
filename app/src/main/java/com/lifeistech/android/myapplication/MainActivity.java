@@ -6,12 +6,14 @@ import android.location.LocationManager;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.annotation.NonNull;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,7 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,7 +36,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
@@ -40,18 +55,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     //google map
 
 
+    public Realm realm;
 
-
-    //public Realm realm;
-    //realm
-
-    ;
+    public static final String TAG = "TEST";
+    GoogleMap map;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary2);
+
+        realm = Realm.getDefaultInstance();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -79,21 +95,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             @Override
             public void onClick(View v) {
                 BottomSheetDialog bottomSheet = new BottomSheetDialog();
-                bottomSheet.show(getSupportFragmentManager(),"bottomsheet");
+                bottomSheet.show(getSupportFragmentManager(), "bottomsheet");
                 bottomSheet.setOnStickerClickListener(new BottomSheetDialog.OnStickerClickListener() {
                     @Override
-                    public void onClick(Sticker sticker) {
-                        android.app.AlertDialog.Builder mBuilder=new android.app.AlertDialog.Builder(MainActivity.this);
-                        View mView =getLayoutInflater().inflate(R.layout.dialog_memo, null);
+                    public void onClick(final Sticker sticker) {
+                        android.app.AlertDialog.Builder mBuilder = new android.app.AlertDialog.Builder(MainActivity.this);
+                        final View mView = getLayoutInflater().inflate(R.layout.dialog_memo, null);
                         mBuilder.setView(mView);
-                        android.app.AlertDialog dialog=mBuilder.create();
+                        final android.app.AlertDialog dialog = mBuilder.create();
                         dialog.show();
-                        Button mSave=(Button)mView.findViewById(R.id.save);
-                        mSave.setOnClickListener(new View.OnClickListener(){
-
+                        Button mSave = (Button) mView.findViewById(R.id.save);
+                        mSave.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                String place = ((EditText) mView.findViewById(R.id.EditPlace)).getText().toString();
+                                String content = ((EditText) mView.findViewById(R.id.EditContent)).getText().toString();
+                                String stickername = sticker.name();
+                                Double latitude = mLocation.getLatitude();
+                                Double longitude = mLocation.getLongitude();
+                                save(place, content, stickername, latitude, longitude);
 
+                                dialog.dismiss();
                             }
                         });
                         // ダイアログを表示
@@ -119,7 +141,50 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         });
         //シールが出てくる
+
+        map = ((SupportMapFragment)
+                getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMap();
+
+        MapsInitializer.initialize(this);
+
+        moveToSapporoStation();
     }
+
+    protected void moveToSapporoStation() {
+        CameraUpdate cu =
+                CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(mLocation.getLatitude(), mLocation.getLongitude()),15);
+        mMap.moveCamera();
+    }
+
+    public void save(final String EditContent, final String EditPlace, final String stickername, final double latitude, final double longitude){
+
+        Date date=new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
+        final String updateDate = sdf.format(date);
+
+        realm.executeTransaction(new Realm.Transaction(){
+            @Override
+            public void execute(Realm bgRealm){
+                Memo memo=realm.createObject(Memo.class);
+                memo.content = EditContent;
+                memo.place = EditPlace;
+                memo.updateDate = updateDate;
+                memo.stickername=stickername;
+                memo.latitude=latitude;
+                memo.longitude=longitude;
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        realm.close();
+    }
+    //realm
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[]permissions, @NonNull int[] grantResults){}
@@ -140,9 +205,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         LatLng Tokyo = new LatLng(location.getLatitude(), location.getLongitude());
         // Markerを作ってくれる
-        mMarker = mMap.addMarker(new MarkerOptions().position(Tokyo).title("Marker in Tokyo"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(Tokyo));
+        mMarker = mMap.addMarker(new MarkerOptions().position(Tokyo).title("Now"));
+
     }
+
+    //realmからデータを取得
+    //
 
     @Override
     public void onProviderEnabled(String provider){}
@@ -164,8 +232,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Add a marker in Sydney and move the camera
 
+        RealmResults<Memo> results = realm.where(Memo.class).findAll();
+        for (Memo data: results){
+            // data.longitude, data.latitude
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(data.longitude, data.latitude))
+                    .title(data.place))
+                    .setIcon(BitmapDescriptorFactory.fromResource(Sticker.valueOf(data.stickername).id));
+        }
     }
-
 }
+
+
+

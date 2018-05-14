@@ -7,9 +7,6 @@ public enum  Sticker {
     DROP(R.drawable.drop),
     FOOD(R.drawable.delicious),
     LUCKY(R.drawable.music),
-    a(R.drawable.heart),
-    b(R.drawable.heart),
-    c(R.drawable.drop),
     SURPRISE(R.drawable.surprise);
 
     int id;
