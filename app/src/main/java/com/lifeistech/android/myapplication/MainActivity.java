@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         LatLng Tokyo = new LatLng(location.getLatitude(), location.getLongitude());
         // Markerを作ってくれる
         mMarker = mMap.addMarker(new MarkerOptions().position(Tokyo).title("Now"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
 
     }
 

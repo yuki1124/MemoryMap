@@ -8,7 +8,8 @@
         android:id="@+id/EditupdateDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"/>
+        android:textSize="30sp"
+        android:hint="Date"/>
 
     <EditText
         android:id="@+id/EditPlace"
