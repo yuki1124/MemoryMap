@@ -1,10 +1,8 @@
-package com.lifeistech.android.myapplication;
+package com.lifeistech.android.memorymap;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 
 public class SingleViewHolder extends RecyclerView.ViewHolder {

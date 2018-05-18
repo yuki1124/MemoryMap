@@ -1,14 +1,7 @@
-package com.lifeistech.android.myapplication;
+package com.lifeistech.android.memorymap;
 
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import io.realm.Realm;
 import io.realm.RealmObject;
 
 public class Memo extends RealmObject{

@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="title_activity_diary2">Map</string>
+    <string name="app_name">Memory Map</string>
+    <string name="title_activity_diary2">Memory Map</string>
 </resources>

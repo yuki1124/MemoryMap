@@ -1,18 +1,14 @@
-package com.lifeistech.android.myapplication;
+package com.lifeistech.android.memorymap;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.method.SingleLineTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BottomSheetDialog extends BottomSheetDialogFragment {

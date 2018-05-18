@@ -1,4 +1,4 @@
-package com.lifeistech.android.myapplication;
+package com.lifeistech.android.memorymap;
 
 import org.junit.Test;
 

@@ -1,6 +1,4 @@
-package com.lifeistech.android.myapplication;
-
-import java.util.Date;
+package com.lifeistech.android.memorymap;
 
 import io.realm.RealmObject;
 

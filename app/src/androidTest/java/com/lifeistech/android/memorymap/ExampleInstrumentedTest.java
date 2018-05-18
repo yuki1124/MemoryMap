@@ -1,4 +1,4 @@
-package com.lifeistech.android.myapplication;
+package com.lifeistech.android.memorymap;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
